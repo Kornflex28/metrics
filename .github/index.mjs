@@ -46,8 +46,8 @@
   if (mode === "publish") {
     console.log(`Pushing staged changes: \n${[...staged].map(file => `  - ${file}`).join("\n")}`)
     const gitted = await git
-      .addConfig("user.name", "GitHub Action")
-      .addConfig("user.email", "<>")
+      .addConfig("user.name", "Kornflex28")
+      .addConfig("user.email", "chauvet.louis@gmail.com")
       .add([...staged])
       .commit("Auto-regenerate files")
       .push("origin", "master")
