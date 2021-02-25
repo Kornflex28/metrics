@@ -30,7 +30,7 @@
         const data = {
           //Template elements
             style, fonts, errors:[],
-            partials:new Set(partials),
+            partials:new Set([...(set.config.order||"").split(",").map(x => x.trim()).filter(x => partials.includes(x)), ...partials]),
           //Plural helper
             s(value, end = "") {
               return value !== 1 ? {y:"ies", "":"s"}[end] : end
@@ -173,6 +173,14 @@
                     forks:faker.random.number(100),
                     files:faker.random.number(100),
                     comments:faker.random.number(1000)
+                  }
+                }) : null),
+              //Introduction
+                ...(set.plugins.enabled.introduction ? ({
+                  introduction:{
+                    mode:"user",
+                    title:options["introduction.title"],
+                    text:faker.lorem.sentences(),
                   }
                 }) : null),
               //Languages
