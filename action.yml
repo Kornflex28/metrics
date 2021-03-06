@@ -41,14 +41,23 @@ inputs:
     required: true
   
   # GitHub username
+  # Defaults to "token" owner
   user:
     description: GitHub username
     default: ""
   
-  # Set to "${{ secrets.GITHUB_TOKEN }}"
+  # GitHub repository
+  # Compute metrics for a repository instead ("user" being the repository owner)
+  # Check https://github.com/lowlighter/metrics/blob/master/source/templates/repository/README.md for more informations
+  repo:
+    description: GitHub repository
+    default: ""
+  
+  # Set to "${{ github.token }}" or "${{ secrets.GITHUB_TOKEN }}"
+  # GITHUB_TOKEN is a special auto-generated token restricted to current repository, which is used to push files in it
   committer_token:
     description: GitHub Token used to commit metrics
-    default: ""
+    default: ${{ github.token }}
   
   # Branch used to commit rendered metrics
   committer_branch:
@@ -103,6 +112,12 @@ inputs:
     description: Use twemojis instead of emojis
     default: no
   
+  # Render GitHub custom emojis (like ":octocat:", see full list at https://api.github.com/emojis)
+  # May increase filesize
+  config_gemoji:
+    description: Use GitHub custom emojis
+    default: yes
+  
   # Enable SVG CSS animations
   config_animations:
     description: SVG CSS animations
@@ -113,7 +128,7 @@ inputs:
   # Specify one value (for both width and height) or two values (one for width and one for height)
   config_padding:
     description: Image padding
-    default: 6%, 15%
+    default: 6%, 13%
   
   # Metrics output format
   config_output:
@@ -146,6 +161,11 @@ inputs:
   dryrun:
     description: Enable dry-run
     default: no
+  
+  # Experimental features
+  experimental_features:
+    description: Experimental features
+    default: ""
   
   # Use mocked data to bypass external APIs
   use_mocked_data:
@@ -393,6 +413,12 @@ inputs:
     description: GitHub users to personally thanks
     default: ""
   
+  # Add specified users to GitHub sponsors ("sponsors" must be specified in "plugin_people_types")
+  # This is useful to list sponsors from unsupported GitHub sponsors sources
+  plugin_people_sponsors_custom:
+    description: Custom GitHub sponsors
+    default: ""
+  
   # Use GitHub identicons instead of users' avatar (for privacy purposes)
   plugin_people_identicons:
     description: Use identicons instead of avatars
@@ -448,6 +474,12 @@ inputs:
   plugin_skyline_frames:
     description: Number of frames
     default: 60
+  
+  # Image quality
+  # Note that it significantly increases output filesize (up to a few Mb) which can cause render/loading issues
+  plugin_skyline_quality:
+    description: Image quality
+    default: 0.5
   
   # ====================================================================================
   # ✨ Stargazers over last weeks
@@ -639,6 +671,16 @@ inputs:
     description: Posts external source
     default: ""
   
+  # Display a few lines about each posts
+  plugin_posts_descriptions:
+    description: Display posts descriptions
+    default: no
+  
+  # Display posts cover images
+  plugin_posts_covers:
+    description: Display posts cover images
+    default: no
+  
   # Number of posts to display
   plugin_posts_limit:
     description: Maximum number of posts to display
@@ -648,6 +690,36 @@ inputs:
   plugin_posts_user:
     description: Posts external source username
     default: .user.login
+  
+  # ====================================================================================
+  # 🗨️ Stackoverflow plugin
+  
+  # Enable or disable plugin
+  plugin_stackoverflow:
+    description: Stackoverflow metrics
+    default: no
+  
+  # Stackoverflow user id
+  # To obtain it, extract the identifier on your account page url
+  plugin_stackoverflow_user:
+    description: Stackoverflow user id
+    default: 0
+  
+  # Sections to display
+  plugin_stackoverflow_sections:
+    description: Sections to display
+    default: answers-top, questions-recent
+  
+  # Number of entries to display per section
+  plugin_stackoverflow_limit:
+    description: Maximum number of entries to display per section
+    default: 2
+  
+  # Number of lines to display per question or answer
+  # Set to 0 to disable limitations
+  plugin_stackoverflow_lines:
+    description: Maximum number of lines to display per question or answer
+    default: 4
   
   # ====================================================================================
   # 🐤 Latest tweets
@@ -662,6 +734,11 @@ inputs:
   plugin_tweets_token:
     description: Twitter API token
     default: ""
+  
+  # Display tweets attachments (images, video previews, etc.)
+  plugin_tweets_attachments:
+    description: Display tweets attchments
+    default: no
   
   # Number of tweets to display
   plugin_tweets_limit:
@@ -826,7 +903,7 @@ runs:
         fi
 
         # Run docker image with current environment
-        docker run --volume $GITHUB_EVENT_PATH:$GITHUB_EVENT_PATH --env-file .env $METRICS_IMAGE
+        docker run --init --volume $GITHUB_EVENT_PATH:$GITHUB_EVENT_PATH --env-file .env $METRICS_IMAGE
         rm .env
       shell: bash
       env:

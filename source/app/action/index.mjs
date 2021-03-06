@@ -50,7 +50,7 @@
 
         //Core inputs
           const {
-            user:_user, token,
+            user:_user, repo:_repo, token,
             template, query, "setup.community.templates":_templates,
             filename, optimize, verify,
             debug, "debug.flags":dflags, "use.mocked.data":mocked, dryrun,
@@ -59,7 +59,7 @@
             "use.prebuilt.image":_image,
             ...config
           } = metadata.plugins.core.inputs.action({core})
-          const q = {...query, template}
+          const q = {...query, ...(_repo ? {repo:_repo} : null), template}
 
         //Docker image
           if (_image)
@@ -76,7 +76,7 @@
         //Token for data gathering
           info("GitHub token", token, {token:true})
           if (!token)
-            throw new Error("You must provide a valid GitHub token to gather your metrics")
+            throw new Error('You must provide a valid GitHub personal token to gather your metrics (see "How to setup?" section at https://github.com/lowlighter/metrics#%EF%B8%8F-using-github-action-on-your-profile-repository-5-min-setup)')
           conf.settings.token = token
           const api = {}
           api.graphql = octokit.graphql.defaults({headers:{authorization:`token ${token}`}})
@@ -101,6 +101,8 @@
           }
           const user = _user || authenticated
           info("GitHub account", user)
+          if (q.repo)
+            info("GitHub repository", `${user}/${q.repo}`)
 
         //Current repository
           info("Current repository", `${github.context.repo.owner}/${github.context.repo.repo}`)

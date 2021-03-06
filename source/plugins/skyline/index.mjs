@@ -7,7 +7,7 @@
             return null
 
         //Load inputs
-          let {year, frames} = imports.metadata.plugins.skyline.inputs({data, account, q})
+          let {year, frames, quality} = imports.metadata.plugins.skyline.inputs({data, account, q})
           if (Number.isNaN(year)) {
             year = new Date().getFullYear()
             console.debug(`metrics/compute/${login}/plugins > skyline > year set to ${year}`)
@@ -17,7 +17,7 @@
 
         //Start puppeteer and navigate to skyline.github.com
           console.debug(`metrics/compute/${login}/plugins > skyline > starting browser`)
-          const browser = await imports.puppeteer.launch({headless:true, executablePath:process.env.PUPPETEER_BROWSER_PATH, args:["--no-sandbox", "--disable-extensions", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]})
+          const browser = await imports.puppeteer.launch({headless:true, executablePath:process.env.PUPPETEER_BROWSER_PATH, args:["--no-sandbox", "--disable-extensions", "--disable-setuid-sandbox", "--disable-dev-shm-usage"], ignoreDefaultArgs:["--disable-extensions"]})
           console.debug(`metrics/compute/${login}/plugins > skyline > started ${await browser.version()}`)
           const page = await browser.newPage()
           await page.setViewport({width, height})
@@ -32,7 +32,7 @@
 
         //Generate gif
           console.debug(`metrics/compute/${login}/plugins > skyline > generating frames`)
-          const framed = await imports.puppeteergif({page, width, height, frames, scale:0.5})
+          const framed = await imports.record({page, width, height, frames, scale:quality})
 
         //Close puppeteer
           await browser.close()
