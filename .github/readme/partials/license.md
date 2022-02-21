@@ -2,9 +2,8 @@
 
 ```
 MIT License
-Copyright (c) 2020 lowlighter
+Copyright (c) 2020-present lowlighter
 ```
 
-![License details](https://github.com/lowlighter/lowlighter/blob/master/metrics.licenses.svg)
-
-![Sponsors](https://github.com/lowlighter/lowlighter/blob/master/metrics.sponsors.svg)
+![Sponsors](https://github.com/lowlighter/metrics/blob/examples/metrics.sponsors.svg)
+![Contributors](https://github.com/lowlighter/metrics/blob/examples/metrics.contributors.svg)
