@@ -2,17 +2,27 @@ query BaseRepository {
   $account(login: "$login") {
     repository(name: "$repo") {
       name
+      createdAt
+      diskUsage
+      homepageUrl
       owner {
         login
       }
       isFork
-      createdAt
-      diskUsage
-      homepageUrl
+      forkCount
       watchers {
         totalCount
       }
       stargazers {
+        totalCount
+      }
+      releases {
+        totalCount
+      }
+      deployments {
+        totalCount
+      }
+      environments {
         totalCount
       }
       languages(first: 8) {
@@ -24,6 +34,10 @@ query BaseRepository {
           }
         }
       }
+      licenseInfo {
+        name
+        spdxId
+      }
       issues_open: issues(states: OPEN) {
         totalCount
       }
@@ -33,16 +47,11 @@ query BaseRepository {
       pr_open: pullRequests(states: OPEN) {
         totalCount
       }
+      pr_closed: pullRequests(states: CLOSED) {
+        totalCount
+      }
       pr_merged: pullRequests(states: MERGED) {
         totalCount
-      }
-      releases {
-        totalCount
-      }
-      forkCount
-      licenseInfo {
-        name
-        spdxId
       }
     }
   }
